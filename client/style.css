@@ -1,0 +1,155 @@
+body {
+  margin: 0;
+  background: #0f0f0f;
+  font-family: Arial;
+  overflow: auto;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/*.network {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  font-size: 14px;
+} */
+
+.circle {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: #1c1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 40px;
+  transition: 0.3s;
+}
+
+.ring {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top: 4px solid white;
+  animation: spin 1s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.btn {
+  padding: 12px 30px;
+  margin: 10px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.black { background: black; box-shadow: 0 0 15px black; }
+.red { background: red; box-shadow: 0 0 20px red; }
+.yellow { background: goldenrod; box-shadow: 0 0 20px yellow; }
+.purple { background: purple; box-shadow: 0 0 20px violet; }
+.green { background: green; box-shadow: 0 0 20px lime; }
+
+.btn:hover { transform: scale(1.1); }
+
+.hidden { display: none; }
+
+footer {
+  position: absolute;
+  
+  font-size: 12px;
+width: 100%;
+  opacity: 0.7;
+}
+
+/* Warning Popup */
+.warningPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 80px;
+  z-index: 9999;   /* 🔥 important */
+}
+.popupBox {
+  background: #222;
+  padding: 30px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 350px;
+}
+
+.popupBox button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: green;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+
+
+/* Report button ko chhota aur niche karne ke liye */
+#reportBtn {
+  margin-top: 80px;    /* Isse Skip/Stop se distance badh jayega */
+  padding: 8px 18px;    /* Button ka size chhota karne ke liye */
+  font-size: 13px;      /* Text thoda chhota */
+  width: auto;          /* Width fix nahi rakhi taaki compact lage */
+  min-width: 100px;
+  opacity: 0.8;         /* Thoda halka dikhega toh main buttons par focus rahega */
+}
+
+/* Jab button dikhe (hidden class hatne par) */
+#reportBtn:not(.hidden) {
+  display: inline-block; 
+}
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+  .logo-capsule {
+    font-family: 'Poppins', sans-serif;
+    font-size: 25px;
+    font-weight: Bold;
+    color: #fff;
+    padding: 25px 30px; /* capsule padding */
+    background: linear-gradient(135deg, #ff7f50, #ffa500); /* orange gradient */
+    border-radius: 50px; /* capsule shape */
+    box-shadow: 0 0 15px #ff7f50, 0 0 30px #ffa500; /* glowy effect */
+    text-align: center;
+    letter-spacing: 2px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  /* hover effect for extra style */
+  .logo-capsule:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #ff7f50, 0 0 40px #ffa500;
+    cursor: pointer;
+  }

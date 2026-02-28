@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reacto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="warningPopup" id="warningPopup">
+  <div class="popupBox">
+    <h2>Warning⚠️</h2>
+    <p>
+      This platform is for respectful communication only.
+Any abusive behaviour will result in account restriction.
+If you receive 3 reports, you will be blocked for 24 hours.
+You must be 18+ years old to use this platform.
+    </p>
+    <button onclick="acceptWarning()">I Agree</button>
+  </div>
+</div>
+
+ <div class="logo-capsule">Reacto</div>
+
+
+<div class="container">
+  <div class="circle" id="circle">
+    <div class="ring" id="ring"></div>
+    <span id="circleText">Reacto</span>
+  </div>
+
+  <div class="buttons">
+    <button id="startBtn" class="btn black">START</button>
+    <button id="skipBtn" class="btn yellow hidden">SKIP</button>
+    <button id="stopBtn" class="btn red hidden">STOP</button>
+   
+  </div>
+ <button id="reportBtn" class="btn purple hidden">REPORT</button>
+
+</div>
+
+<div>
+<footer>
+  Made by Red Shark 🔥 &copy; <span id="year"></span>
+</footer>
+</div>
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
