@@ -1,7 +1,7 @@
 const socket = io();
 
 /* =========================
-   WARNING FIX
+   WARNING SYSTEM
 ========================= */
 
 function acceptWarning() {
@@ -9,6 +9,21 @@ function acceptWarning() {
   const popup = document.getElementById("warningPopup");
   if (popup) popup.style.display = "none";
 }
+
+window.addEventListener("load", () => {
+  const popup = document.getElementById("warningPopup");
+
+  if (localStorage.getItem("reactoAccepted") !== "yes") {
+    popup.style.display = "flex";
+  } else {
+    popup.style.display = "none";
+  }
+
+  const acceptBtn = document.getElementById("acceptBtn");
+  if (acceptBtn) {
+    acceptBtn.onclick = acceptWarning;
+  }
+});
 
 /* =========================
    UI ELEMENTS
@@ -64,7 +79,7 @@ socket.on("matched", () => {
 });
 
 /* =========================
-   PARTNER LEFT FIX
+   PARTNER LEFT
 ========================= */
 
 socket.on("partner-left", () => {
@@ -79,7 +94,7 @@ socket.on("partner-left", () => {
 });
 
 /* =========================
-   CREATE PEER
+   CREATE PEER CONNECTION
 ========================= */
 
 function createPeer(isCaller) {
