@@ -1,5 +1,19 @@
 const socket = io();
 
+/* =========================
+   WARNING FIX
+========================= */
+
+function acceptWarning() {
+  localStorage.setItem("reactoAccepted", "yes");
+  const popup = document.getElementById("warningPopup");
+  if (popup) popup.style.display = "none";
+}
+
+/* =========================
+   UI ELEMENTS
+========================= */
+
 const circle = document.getElementById("circle");
 const circleText = document.getElementById("circleText");
 const ring = document.getElementById("ring");
@@ -47,6 +61,21 @@ socket.on("matched", () => {
   circle.classList.add("green");
 
   createPeer(true);
+});
+
+/* =========================
+   PARTNER LEFT FIX
+========================= */
+
+socket.on("partner-left", () => {
+  circleText.innerText = "Searching...";
+  ring.style.display = "block";
+  circle.classList.remove("green");
+
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
 });
 
 /* =========================
