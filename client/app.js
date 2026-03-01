@@ -1,120 +1,100 @@
+const socket = io();
+
 const circle = document.getElementById("circle");
 const circleText = document.getElementById("circleText");
 const ring = document.getElementById("ring");
-const socket = io();
+
 const startBtn = document.getElementById("startBtn");
 const skipBtn = document.getElementById("skipBtn");
 const stopBtn = document.getElementById("stopBtn");
-const reportBtn = document.getElementById("reportBtn");
 
-const warningPopup = document.getElementById("warningPopup");
+let localStream;
+let peerConnection;
 
-let searching = false;
-
-/* =========================
-   WARNING SYSTEM (18+)
-========================= */
-
-function acceptWarning() {
-  localStorage.setItem("reactoAccepted", "yes");
-  warningPopup.style.display = "none";
-}
-
-window.addEventListener("load", () => {
-  // Show popup only if not accepted before
-  if (localStorage.getItem("reactoAccepted") !== "yes") {
-    warningPopup.style.display = "flex";
-  } else {
-    warningPopup.style.display = "none";
-  }
-
-  // Check 24hr block
-  let blockedUntil = localStorage.getItem("reactoBlockedUntil");
-
-  if (blockedUntil && Date.now() < blockedUntil) {
-    alert("You are blocked for 24 hours due to multiple reports.");
-    startBtn.disabled = true;
-  }
-});
+const configuration = {
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+};
 
 /* =========================
    START SEARCH
 ========================= */
 
-startBtn.onclick = () => {
-  searching = true;
+startBtn.onclick = async () => {
+  try {
+    circleText.innerText = "Requesting Mic...";
+    ring.style.display = "block";
 
-  circleText.innerText = "Searching...";
-  ring.style.display = "block";
-  circle.classList.remove("green");
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-  startBtn.classList.add("hidden");
-  stopBtn.classList.remove("hidden");
-  skipBtn.classList.remove("hidden");
-  reportBtn.classList.remove("hidden");
+    console.log("Mic granted ✅");
 
-  // Fake connect after 3 seconds
-  setTimeout(() => {
-    if (searching) {
-      circleText.innerText = "Connected";
-      ring.style.display = "none";
-      circle.classList.add("green");
-    }
-  }, 3000);
-};
+    circleText.innerText = "Searching...";
+    socket.emit("find");
 
-/* =========================
-   SKIP USER
-========================= */
-
-skipBtn.onclick = () => {
-  circleText.innerText = "Searching...";
-  ring.style.display = "block";
-  circle.classList.remove("green");
-
-  setTimeout(() => {
-    circleText.innerText = "Connected";
-    ring.style.display = "none";
-    circle.classList.add("green");
-  }, 3000);
-};
-
-/* =========================
-   STOP CALL
-========================= */
-
-stopBtn.onclick = () => {
-  searching = false;
-
-  circleText.innerText = "Reacto";
-  ring.style.display = "none";
-  circle.classList.remove("green");
-
-  skipBtn.classList.add("hidden");
-  reportBtn.classList.add("hidden");
-  stopBtn.classList.add("hidden");
-  startBtn.classList.remove("hidden");
-};
-
-/* =========================
-   REPORT SYSTEM (3 REPORT = 24H BLOCK)
-========================= */
-
-reportBtn.onclick = () => {
-  let reports = localStorage.getItem("reactoReports");
-  reports = reports ? parseInt(reports) : 0;
-
-  reports++;
-  localStorage.setItem("reactoReports", reports);
-
-  if (reports >= 3) {
-    localStorage.setItem(
-      "reactoBlockedUntil",
-      Date.now() + 24 * 60 * 60 * 1000
-    );
-    alert("You have been blocked for 24 hours due to multiple reports.");
-    location.reload();
-  } else {
-    alert("User reported.");
+  } catch (err) {
+    console.error("Mic error:", err);
+    alert("Mic permission denied or error occurred.");
   }
 };
+
+/* =========================
+   MATCHED
+========================= */
+
+socket.on("matched", () => {
+  circleText.innerText = "Connected";
+  ring.style.display = "none";
+  circle.classList.add("green");
+
+  createPeer(true);
+});
+
+/* =========================
+   CREATE PEER
+========================= */
+
+function createPeer(isCaller) {
+  peerConnection = new RTCPeerConnection(configuration);
+
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  peerConnection.ontrack = event => {
+    const audio = new Audio();
+    audio.srcObject = event.streams[0];
+    audio.play();
+  };
+
+  peerConnection.onicecandidate = event => {
+    if (event.candidate) {
+      socket.emit("ice-candidate", event.candidate);
+    }
+  };
+
+  if (isCaller) createOffer();
+}
+
+async function createOffer() {
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+  socket.emit("offer", offer);
+}
+
+socket.on("offer", async (offer) => {
+  createPeer(false);
+  await peerConnection.setRemoteDescription(offer);
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
+  socket.emit("answer", answer);
+});
+
+socket.on("answer", async (answer) => {
+  await peerConnection.setRemoteDescription(answer);
+});
+
+socket.on("ice-candidate", async (candidate) => {
+  if (peerConnection) {
+    await peerConnection.addIceCandidate(candidate);
+  }
+});
